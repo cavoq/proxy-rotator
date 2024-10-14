@@ -1,0 +1,6 @@
+# Set up Tor to listen on the SOCKS port (default for Tor traffic)
+SOCKSPort 9050
+# Enable the control port for Tor to receive commands (e.g., IP rotation)
+ControlPort 9051
+# Cookie authentication for the control port
+CookieAuthentication 0
