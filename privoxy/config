@@ -1,7 +1,7 @@
 # Forward all traffic to the Tor SOCKS5 proxy
-forward-socks5t / 0.0.0.0:9050 .
+forward-socks5t / localhost:9050 .
 # Listen on the following address and port
-listen-address 0.0.0.0:8118
+listen-address localhost:8118
 # Logging configuration
 # logfile logfile
 # debug 1

@@ -13,12 +13,13 @@ RUN chmod 644 /etc/tor/torrc
 COPY privoxy/config /etc/privoxy/config
 RUN chmod 644 /etc/privoxy/config
 
-# Certificates
-COPY certs/mitmproxy.crt /root/.mitmproxy/mitmproxy.pem
-RUN cp /root/.mitmproxy/mitmproxy.pem /usr/local/share/ca-certificates/mitmproxy.crt && \
-    update-ca-certificates
-
 WORKDIR /proxy-rotator
+
+# Certificates
+COPY certs /certs
+COPY /certs/proxy-rotator.pem /root/.mitmproxy/mitmproxy.pem
+RUN cp /certs/proxy-rotator.crt /usr/local/share/ca-certificates/proxy-rotator.crt && \
+    update-ca-certificates
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
