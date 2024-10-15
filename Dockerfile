@@ -1,7 +1,7 @@
 FROM mitmproxy/mitmproxy
 
 RUN apt-get update && \
-    apt-get install -y tor openssl privoxy && \
+    apt-get install -y tor openssl privoxy ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 # Tor configuration
@@ -12,6 +12,11 @@ RUN chmod 644 /etc/tor/torrc
 # Privoxy configuration
 COPY privoxy/config /etc/privoxy/config
 RUN chmod 644 /etc/privoxy/config
+
+# Certificates
+COPY certs/mitmproxy.crt /root/.mitmproxy/mitmproxy.pem
+RUN cp /root/.mitmproxy/mitmproxy.pem /usr/local/share/ca-certificates/mitmproxy.crt && \
+    update-ca-certificates
 
 WORKDIR /proxy-rotator
 

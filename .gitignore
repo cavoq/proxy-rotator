@@ -1,2 +1,5 @@
 /env
 *.vscode
+*.key
+*.pem
+*.crt
