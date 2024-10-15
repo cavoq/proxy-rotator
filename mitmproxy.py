@@ -16,7 +16,6 @@ def renew_tor_identity():
         print(f"Error renewing Tor identity: {e}")
 
 
-def request(flow: http.HTTPFlow):
+def request(_: http.HTTPFlow):
     """Called for each HTTP request passing through mitmproxy."""
     renew_tor_identity()
-    #flow.request.proxy = f"http://127.0.0.1:{PRIVOXY_PORT}"

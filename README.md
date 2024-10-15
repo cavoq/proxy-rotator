@@ -1,2 +1,2 @@
 # proxy-rotator
-Modern rotating TOR proxy. 
+Modern rotating TOR proxy.
