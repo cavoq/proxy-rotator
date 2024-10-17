@@ -2,6 +2,3 @@
 forward-socks5t / localhost:9050 .
 # Listen on the following address and port
 listen-address localhost:8118
-# Logging configuration
-# logfile logfile
-# debug 1

@@ -1,7 +1,7 @@
 FROM mitmproxy/mitmproxy
 
 RUN apt-get update && \
-    apt-get install -y tor openssl privoxy ca-certificates && \
+    apt-get install -y tor privoxy && \
     rm -rf /var/lib/apt/lists/*
 
 # Tor configuration
@@ -15,12 +15,6 @@ RUN chmod 644 /etc/privoxy/config
 
 WORKDIR /proxy-rotator
 
-# Certificates
-COPY certs /certs
-COPY /certs/proxy-rotator.pem /root/.mitmproxy/mitmproxy.pem
-RUN cp /certs/proxy-rotator.crt /usr/local/share/ca-certificates/proxy-rotator.crt && \
-    update-ca-certificates
-
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
@@ -30,6 +24,6 @@ EXPOSE 8080 8081 8118
 
 CMD ["sh", "-c", "\
     tor & \
-    privoxy --no-daemon /etc/privoxy/config & \
-    mitmproxy --mode reverse:http://localhost:8118 \
+    privoxy /etc/privoxy/config & \
+    mitmproxy --mode upstream:http://localhost:8118 \
     --scripts mitmproxy.py"]
