@@ -1,5 +1,8 @@
 import json
 import os
+from time import time
+from base64 import b64decode
+
 from stem import Signal
 from stem.control import Controller
 from mitmproxy import http
@@ -11,6 +14,10 @@ TOR_CONTROL_PORT = os.environ.get("TOR_CONTROL_PORT", 9051)
 PRIVOXY_PORT = os.environ.get("PRIVOXY_PORT", 8118)
 USERNAME = os.environ.get("USERNAME")
 PASSWORD = os.environ.get("PASSWORD")
+RENEWAL_INTERVAL = 30
+
+last_renewal_time = 0
+
 
 if not all([TOR_CONTROL_PORT, PRIVOXY_PORT, USERNAME, PASSWORD]):
     raise ValueError(
@@ -27,13 +34,23 @@ def renew_tor_identity():
         print(f"Error renewing Tor identity: {e}")
 
 
+def should_renew(current_time):
+    """Determines if the Tor identity should be renewed based on the elapsed time."""
+    global last_renewal_time
+
+    if current_time - last_renewal_time >= RENEWAL_INTERVAL:
+        last_renewal_time = current_time
+        return True
+    return False
+
+
 def request(flow: http.HTTPFlow):
     """Called for each HTTP request passing through mitmproxy."""
     auth_header = flow.request.headers.get("Proxy-Authorization")
 
     if not auth_header:
         json_response = {
-            "error": "Proxy Authentication Required",
+            "error": "Proxy Authentication Required.",
             "message": "You must provide valid authentication credentials to access this proxy."
         }
         flow.response = http.Response.make(
@@ -44,12 +61,14 @@ def request(flow: http.HTTPFlow):
                 "Proxy-Authenticate": 'Basic realm="proxy"'
             }
         )
+        return
 
     method, credentials = auth_header.split(" ", 1)
     if method.lower() == "basic":
-        import base64
-        decoded = base64.b64decode(credentials).decode("utf-8")
+        decoded = b64decode(credentials).decode("utf-8")
         user, passwd = decoded.split(":", 1)
 
         if user == USERNAME and passwd == PASSWORD:
-            renew_tor_identity()
+            current_time = time()
+            if should_renew(current_time):
+                renew_tor_identity()
