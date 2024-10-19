@@ -34,7 +34,7 @@ def renew_tor_identity():
         print(f"Error renewing Tor identity: {e}")
 
 
-def should_renew(current_time):
+def should_renew(current_time: float) -> bool:
     """Determines if the Tor identity should be renewed based on the elapsed time."""
     global last_renewal_time
 
