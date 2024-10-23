@@ -1,31 +1,37 @@
 # proxy-rotator
 
-Modern rotating TOR proxy.
+Modern rotating TOR proxy (Currently only supports HTTP)
 
 ## Usage
 
-**Create a `.env` file:**
+**Create a `.env` file containing the following environment variables:**
 
 ```bash
 USERNAME=<username>
 PASSWORD=<password>
-PRIVOXY_PORT=<port>
-TOR_PORT=<port>
+TOR_CONTROL_PORT=<port>
+RENEWAL_INTERVAL=<interval> # in seconds
 ```
 
-**Build the container:**
+**Build and run the Docker container:**
+
 ```bash
 docker build -t proxy-rotator .
-```
-
-**Run the container:**
-
-```bash
 docker run --env-file .env -it -p 8080:8080 proxy-rotator
 ```
 
-**Test the proxy:**
+**Test proxy with curl:**
 
 ```bash
 curl -x http://localhost:8080 -U username:password http://httpbin.org/ip
 ```
+
+```json
+{
+  "origin": "rotating-ip"
+}
+```
+
+## How it works
+
+![Alt Text](resources/proxy-rotator.png)
