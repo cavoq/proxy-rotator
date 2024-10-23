@@ -14,14 +14,14 @@ TOR_CONTROL_PORT = os.environ.get("TOR_CONTROL_PORT", 9051)
 PRIVOXY_PORT = os.environ.get("PRIVOXY_PORT", 8118)
 USERNAME = os.environ.get("USERNAME")
 PASSWORD = os.environ.get("PASSWORD")
-RENEWAL_INTERVAL = 30
+RENEWAL_INTERVAL = os.environ.get("RENEWAL_INTERVAL", 30)
 
 last_renewal_time = 0
 
 
 if not all([TOR_CONTROL_PORT, PRIVOXY_PORT, USERNAME, PASSWORD]):
     raise ValueError(
-        "Missing environment variables: TOR_CONTROL_PORT, PRIVOXY_PORT, USERNAME, PASSWORD")
+        "Missing environment variables, please check the .env file.")
 
 
 def renew_tor_identity():
@@ -37,7 +37,6 @@ def renew_tor_identity():
 def should_renew(current_time: float) -> bool:
     """Determines if the Tor identity should be renewed based on the elapsed time."""
     global last_renewal_time
-
     if current_time - last_renewal_time >= RENEWAL_INTERVAL:
         last_renewal_time = current_time
         return True
@@ -58,7 +57,9 @@ def request(flow: http.HTTPFlow):
             json.dumps(json_response).encode('utf-8'),
             {
                 "Content-Type": "application/json",
-                "Proxy-Authenticate": 'Basic realm="proxy"'
+                "Content-Length": str(len(json.dumps(json_response))),
+                "Proxy-Authenticate": 'Basic realm="proxy"',
+                "Connection": "close"
             }
         )
         return

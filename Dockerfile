@@ -20,7 +20,7 @@ RUN pip install -r requirements.txt
 
 COPY mitmproxy.py .
 
-EXPOSE 8080 8118
+EXPOSE 8080 8081 8118 9050
 
 CMD ["sh", "-c", "\
     tor & \
