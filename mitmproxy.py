@@ -10,16 +10,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TOR_CONTROL_PORT = os.environ.get("TOR_CONTROL_PORT", 9051)
-PRIVOXY_PORT = os.environ.get("PRIVOXY_PORT", 8118)
+TOR_CONTROL_PORT = int(os.environ.get("TOR_CONTROL_PORT", 9051))
 USERNAME = os.environ.get("USERNAME")
 PASSWORD = os.environ.get("PASSWORD")
-RENEWAL_INTERVAL = os.environ.get("RENEWAL_INTERVAL", 30)
+RENEWAL_INTERVAL = int(os.environ.get("RENEWAL_INTERVAL", 30))
 
 last_renewal_time = 0
 
 
-if not all([TOR_CONTROL_PORT, PRIVOXY_PORT, USERNAME, PASSWORD]):
+if not all([TOR_CONTROL_PORT, USERNAME, PASSWORD]):
     raise ValueError(
         "Missing environment variables, please check the .env file.")
 
